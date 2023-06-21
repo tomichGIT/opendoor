@@ -21,8 +21,13 @@ export const backend = async (req,res) => {
 // }
 
 // Función de verLogs
-export const verLogs = async (req,res) => {
-    res.json({ message: "mostrandoLogs" });
+export const getLogs = async (req,res) => {
+    try {
+        const [rows] = await pool.query("SELECT log.*, c.name AS client FROM log INNER JOIN clients c ON (c.id = log.id_client) ORDER BY id DESC LIMIT 100");
+        res.json(rows);
+    } catch (error) {
+        return res.status(500).json({ message: "Something went wrong: "+error });
+    }
 
 }
 

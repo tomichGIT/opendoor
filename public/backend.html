@@ -7,31 +7,201 @@
   <title>Edificio Admin Page</title>
   <!-- Agrega los enlaces a los estilos de Tailwind CSS -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+  <link href="css/opendoor.css" rel="stylesheet">
   <link href="css/backend.css" rel="stylesheet">
 </head>
 
 <body class="bg-gray-100">
-  <div class="flex flex-col items-center justify-center h-screen">
-    <h1 class="text-4xl font-bold mb-4">¡Bienvenido <b class="txt_nombre">ADMIN</b> a tu departamento!</h1>
-    <p class="text-lg mb-8">Estamos encantados de tenerte como nuestro huésped.</p>
-    <button id="doorBtn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded">
-      Abrir puerta del edificio
-    </button>
-    <p>Este link dejara de funcionar en <b id="timer">14:25:12</b></p>
- 
 
-    <div>
-        <hr>
-        Funcionalidades a desarrollar (BACKEND):
-        <ul>
-            <li>- Lista de edificios (categorías)</li>
-            <li>- Lista de Sensores según edificio (editar para incluir link de EWELINK)</li>
-            <li>- Lista de Pasajeros con ABM</li>
-            <li>- Log de movimiento</li>
-        </ul>
+
+  <header class="bg-gray-800 p-4">
+    <div class="container mx-auto flex justify-between items-center">
+      <h1 class="text-xl font-bold text-white">OpenDoor</h1>
+      <button id="logoutBtn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded private hidden">Salir</button>
     </div>
+  </header>
 
 
+
+
+  <section class="p-8 private hidden">
+    <div class="container mx-auto">
+      <h2 class="text-2xl font-bold mb-4">Doors List</h2>
+      <div class="flex justify-end mb-4">
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add New Door</button>
+      </div>
+      <table class="min-w-full border border-gray-300" id="tablaSensores">
+        <thead>
+          <tr>
+            <th class="py-2 px-4 bg-gray-100">Edificio</th>
+            <th class="py-2 px-4 bg-gray-100">Nombre</th>
+            <th class="py-2 px-4 bg-gray-100">Access Link</th>
+            <th class="py-2 px-4 bg-gray-100">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="4" class="h-32 text-xl text-center">
+              <span>Buscando datos...</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Guests -->
+  <section class="p-8 private hidden">
+    <div class="container mx-auto">
+      <h2 class="text-2xl font-bold mb-4">Guest List</h2>
+      <div class="flex justify-end mb-4">
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add New Guest</button>
+      </div>
+      <table class="min-w-full border border-gray-300" id="tablaClientes">
+        <thead>
+          <tr>
+            <th class="py-2 px-4 bg-gray-100">#</th>
+            <th class="py-2 px-4 bg-gray-100">Full Name</th>
+            <th class="py-2 px-4 bg-gray-100">Apartment Number</th>
+            <th class="py-2 px-4 bg-gray-100">Arriving Date</th>
+            <th class="py-2 px-4 bg-gray-100">Link Expiration</th>
+            <th class="py-2 px-4 bg-gray-100">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="5" class="h-32 text-xl text-center">
+              <span>Buscando datos...</span>
+            </td>
+          </tr>
+          <!-- Example guest data -->
+          <!-- <tr class="bg-gray-200">
+            <td class="py-2 px-4">John Doe</td>
+            <td class="py-2 px-4">A102</td>
+            <td class="py-2 px-4">2023-06-25</td>
+            <td class="py-2 px-4">Building A</td>
+            <td class="py-2 px-4">
+              <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">
+                <i class="fas fa-key"></i>
+              </button>
+              <button class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </td>
+          </tr>
+          <tr class="bg-gray-100">
+            <td class="py-2 px-4">John Doe</td>
+            <td class="py-2 px-4">A102</td>
+            <td class="py-2 px-4">2023-06-25</td>
+            <td class="py-2 px-4">Building A</td>
+            <td class="py-2 px-4">
+              <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">
+                <i class="fas fa-key"></i>
+              </button>
+              <button class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </td>
+          </tr>
+          <tr class="bg-gray-200">
+            <td class="py-2 px-4">John Doe</td>
+            <td class="py-2 px-4">A102</td>
+            <td class="py-2 px-4">2023-06-25</td>
+            <td class="py-2 px-4">Building A</td>
+            <td class="py-2 px-4">
+              <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">
+                <i class="fas fa-key"></i>
+              </button>
+              <button class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </td>
+          </tr> -->
+          <!-- Add more guest rows as needed -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+
+  <!-- Logs -->
+  <section class="p-8 private hidden">
+    <div class="container mx-auto">
+      <h2 class="text-2xl font-bold mb-4">Registro Log (últimos 100)</h2>
+      <table class="min-w-full border border-gray-300"  id="tablaLogs">
+        <thead>
+          <tr>
+            <th class="py-2 px-4 bg-gray-100">Fecha</th>
+            <th class="py-2 px-4 bg-gray-100">Cliente</th>
+            <th class="py-2 px-4 bg-gray-100">IP</th>
+            <th class="py-2 px-4 bg-gray-100">Dispositivo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="4" class="h-32 text-xl text-center">
+              <span>Buscando datos...</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+  
+
+  <!-- Login -->
+  <section class="flex items-center justify-center login hidden" style="height: 60vh;">
+    <div class="w-full max-w-xs">
+      <img src="imgs/login.png" alt="Login" class="mx-auto" style="margin-bottom: -17px;">
+      <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
+            Username
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="username" type="text" placeholder="Enter your username">
+        </div>
+        <div class="mb-6">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+            Password
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="password" type="password" placeholder="Enter your password">
+        </div>
+        <div class="flex items-center justify-center">
+          <button id="loginBtn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="button">
+            Acceder
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  
+  <!-- Footer -->
+  <section class="justify-center bg-gray-800 flex footer text-white" style="position:absolute; bottom:0; width:100%;">
+    Made with <span class="text-red">❤</span> by&nbsp;<u><a href="https://kukumo.net">Kukumo.net</a></u>
   </div>
 
 
