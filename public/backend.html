@@ -72,6 +72,12 @@
             <th class="py-2 px-4 bg-gray-100">Access Link</th>
             <th class="py-2 px-4 bg-gray-100">Actions</th>
           </tr>
+          <tr>
+              <th class="py-2 px-4"><input type="text" value="" id="txt_edificio" class="border border-gray-300" style="width:100%;" /></th>
+              <th class="py-2 px-4"><input type="text" value="" id="txt_nombre" class="border border-gray-300" style="width:100%;" /></th>
+              <th class="py-2 px-4"><input type="text" value="" id="txt_link" class="border border-gray-300" style="width:100%;" /></th>
+              <th class="py-2 px-4"><button data-id="new" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded" id="saveDoorBtn">Guardar</button></th>
+          </tr>
         </thead>
         <tbody id="doorsList">
           <tr>
@@ -156,7 +162,7 @@
 
 
   <!-- Agrega el script para la interacción del botón -->
-  <script src="js/backend.js"></script>
+  <script  type="module" src="js/backend.js"></script>
 </body>
 
 </html>

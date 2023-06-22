@@ -1,3 +1,12 @@
-.hidden {
+  .hidden {
     display: none;
   }
+
+
+  .text-limit {
+    display: -webkit-box;
+    -webkit-line-clamp: 6; /* Number of lines to display */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

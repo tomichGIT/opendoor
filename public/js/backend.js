@@ -1,37 +1,26 @@
+    import { formatDate } from './libs/dates.js';
+    import { shorterText, showHideMoreInfo } from './libs/texts.js';
+    import {setReactive} from './libs/reactive.js';
+
+
+   /*
+   ejemplo link apertura puerta:
+   https://us-apia.coolkit.cc/v2/smartscene2/webhooks/execute?id=1fb4a1500da34e41a20413f789227f7d
+
+   ejemplo response:
+    {
+        "error": 0,
+        "msg": "",
+        "data": {}
+    }
+   */
+   
     const privateSection = document.querySelectorAll('.private'); // solo elementos privados
     const loginSection = document.querySelectorAll('.login'); // solo elementos en pantalla de login
-    //const publicSection = document.querySelectorAll('.public'); // elementos publicos (tanto login y privado)
 
-    const tablaSensores = document.querySelector('#tablaSensores tbody');
+    const tablaSensores = document.querySelector('#tablaSensores');
     const tablaClientes = document.querySelector('#tablaClientes tbody');
     const tablaLogs = document.querySelector('#tablaLogs tbody');
-
-    // botones para agregar    
-    //const addDoorBtn = document.getElementById('addDoorBtn');
-    //const addGuestBtn = document.getElementById('addGuestBtn'); 
-    // addDoorBtn.addEventListener('click', () => {
-    //     console.log('Abrir Modal y Formulario!');
-
-    // //     // Create the inline form elements
-    // //   const formRow = document.createElement('tr');
-    // //   formRow.innerHTML = `
-    // //     <td><input type="text" class="border border-gray-300 p-2"></td>
-    // //     <td><input type="text" class="border border-gray-300 p-2"></td>
-    // //     <td><input type="text" class="border border-gray-300 p-2"></td>
-    // //     <td>
-    // //       <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">Save</button>
-    // //       <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Cancel</button>
-    // //     </td>
-    // //   `;
-
-    // //   // Remove the "Buscando datos..." row
-    // //   doorsList.innerHTML = '';
-
-    // //   // Append the form row to the doors list
-    // //   doorsList.appendChild(formRow);
-
-
-    // });
 
 
     const loginBtn = document.getElementById('loginBtn');
@@ -47,91 +36,196 @@
         checkLogin();
     });
 
+    // mis elementos reactivos, ejecutan su render automáticamente luego de modificar su vector.
+    // al hacer un update de la información, los render corren solos.
+    const A_doors=setReactive([], renderDoors);
+    const A_guests=setReactive([], renderGuests);
 
     // my Store con todas las props de mi app (la puedo enviar a una cookie o local Storage)
     const myApp = {
-        "tf_login" : true // Replace with the actual condition to determine the login status
+        "tf_login" : true, // Replace with the actual condition to determine the login status
+        "A_doors" : A_doors,
+        "A_guests" : A_guests
+    }
+
+    
+    const saveDoorBtn = document.getElementById("saveDoorBtn");
+    saveDoorBtn.addEventListener('click', (e) => {
+
+        const txt_edificio=tablaSensores.querySelector("#txt_edificio").value;
+        const txt_nombre=tablaSensores.querySelector("#txt_nombre").value;
+        const txt_link=tablaSensores.querySelector("#txt_link").value;
+        const dataId = saveDoorBtn.getAttribute("data-id");
+
+        if(txt_edificio.length < 3 || txt_nombre.length < 3){
+            alert("Nombre de edificio o de Puerta muy cortos"); return;
+        }
+  
+        // if(dataId =="new"){
+        //     A_doors.push(doorData)
+        // }else {
+        //     A_doors[dataId]=doorData;
+        // }
+
+        const doorData = {
+            building:txt_edificio,
+            door:txt_nombre,
+            link_url:txt_link
+        };
+
+        // si tiene id estoy editando, si no creo uno nuevo
+        // dataId es del array del DOM, el id original lo obtengo acá.
+        const fetchUrl=(A_doors[dataId])?'/api/sensores/'+A_doors[dataId].id:'/api/sensores';
+
+        fetch(fetchUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(doorData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            // lo guardo en mi variable reactiva (ejecuta automáticamente renderDoors() )
+            getDoors();
+        })
+        .catch(error => {
+          // Handle any errors that occur during the fetch request
+          console.error('Error:', error);
+        });
+
+
+    });
+    function removeDoor(event){
+        // confirmación y luego eliminar
+        const dataId = event.currentTarget.getAttribute("data-id");
+        
+        const confirmation = confirm("esta seguro que quieres borrar? "+dataId);
+        if (!confirmation) { return }
+
+        const itemId = A_doors[dataId].id;
+    
+        fetch('/api/sensores/'+itemId, {method:"DELETE"})
+        .then(response => response.json())
+        .then(data => {
+            // lo guardo en mi variable reactiva (ejecuta automáticamente renderDoors() )
+            getDoors();
+        })
+        .catch(error => {
+          // Handle any errors that occur during the fetch request
+          console.error('Error:', error);
+        });
+        //A_doors.splice(dataId, 1);
+    }
+    function editDoor(event){
+        // cargar el formulario con los datos
+        // esta funcion NO LLEVA  FETCH REQUEST!
+        const dataId = event.currentTarget.getAttribute("data-id");
+        console.log("editando door: "+dataId);
+
+        const txt_edificio=tablaSensores.querySelector("#txt_edificio");
+        const txt_nombre=tablaSensores.querySelector("#txt_nombre");
+        const txt_link=tablaSensores.querySelector("#txt_link");
+        
+        saveDoorBtn.setAttribute("data-id", dataId);
+
+        txt_edificio.value=A_doors[dataId].building;
+        txt_nombre.value=A_doors[dataId].door;
+        txt_link.value=A_doors[dataId].link_url;
+    }
+    function renderDoors(){
+        //console.log("Rendering A_doors:", A_doors);
+
+        // Limpio el formulario
+        tablaSensores.querySelector("#txt_edificio").value="";
+        tablaSensores.querySelector("#txt_nombre").value="";
+        tablaSensores.querySelector("#txt_link").value="";
+        saveDoorBtn.setAttribute("data-id", "new");
+
+        // // limpia o pone en mensaje de 0 elementos
+        tablaSensores.querySelector("tbody").innerHTML =(A_doors.length)?'':'<tr><td colspan="4" class="h-32 text-xl text-center"><span>No se encontrar Registros</span></td></tr>'; // Clear existing content
+        
+            // Process the retrieved data
+            A_doors.forEach((sensor, index) => {
+            const row = document.createElement('tr');
+            row.classList.add(index % 2 === 0 ? 'bg-gray-200' : 'bg-gray-100');
+
+            var sensorLink = shorterText(sensor.link_url, 35);
+
+            const rowHtml=`<!-- Example guest data -->
+                                <td class="py-2 px-4">${sensor.building}</td>
+                                <td class="py-2 px-4">${sensor.door}</td>
+                                <td class="py-2 px-4">${sensorLink}</td>
+                                <td class="py-2 px-4">
+                                    <button data-id="${index}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded editDoor"><i class="fas fa-edit"></i></button>
+                                    <button data-id="${index}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded removeDoor"><i class="fas fa-trash-alt"></i></button>
+                                </td>
+                        `;
+            
+            row.innerHTML=rowHtml;                
+            tablaSensores.querySelector("tbody").appendChild(row);
+        });
+        console.log(A_doors); // Replace with your desired logic
+        
+        // Update de Buttons
+        const removeButtons = tablaSensores.querySelectorAll('tbody .removeDoor');
+        removeButtons.forEach(button => {
+          button.addEventListener('click', removeDoor);
+        });
+        const editButtons = tablaSensores.querySelectorAll('tbody .editDoor');
+        editButtons.forEach(button => {
+          button.addEventListener('click', editDoor);
+        });
+
     }
 
 
+
+    function renderGuests(){
+        console.log("Rendering A_guests:", A_guests);
+    }
 
     function checkLogin(){
         if (myApp.tf_login) {
             loginSection.forEach(section => {   section.classList.add('hidden');        });
             privateSection.forEach(section => { section.classList.remove('hidden');     });
-            //publicSection.forEach(section => {  section.classList.add('hidden');        });
+            getData();
         } else {
             loginSection.forEach(section => {   section.classList.remove('hidden');     });
             privateSection.forEach(section => { section.classList.add('hidden');        });
-            //publicSection.forEach(section => {  section.classList.remove('hidden');     });
         }
     }
 
 
     function initApp(){
         checkLogin();
+    }
 
+    function getData(){
         getDoors();
         getGuests();
         getLogs();
     }
 
-    let A_doors=[];
+
     function getDoors(){
+        A_doors.length = 0; // lo vacío (es constant, asique no lo puedo = [] )
         fetch('/api/sensores')
         .then(response => response.json())
         .then(data => {
-
-            A_doors=data; // también lo guardo en una variable para usar en otros lados (los select)
-            // Process the retrieved data
-          
-            // limpia o pone en mensaje de 0 elementos
-            tablaSensores.innerHTML =(data.length)?'':'<tr><td colspan="4" class="h-32 text-xl text-center"><span>No se encontrar Registros</span></td></tr>'; // Clear existing content
-     
-            // agrego form de nuevo
-            tablaSensores.innerHTML =`<tr>
-                                <td class="py-2 px-4"><input type="text" value="" class="border border-gray-300" style="width:100%;" /></td>
-                                <td class="py-2 px-4"><input type="text" value="" class="border border-gray-300" style="width:100%;" /></td>
-                                <td class="py-2 px-4"><input type="text" value="" class="border border-gray-300" style="width:100%;" /></td>
-                                <td class="py-2 px-4"><button data-id="0" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded edit">Guardar</button></td>
-                                </tr>
-            `;
-
-
-            // Process the retrieved data
-            data.forEach((sensor, index) => {
-                const row = document.createElement('tr');
-                row.classList.add(index % 2 === 0 ? 'bg-gray-200' : 'bg-gray-100');
-
-                const rowHtml=`<!-- Example guest data -->
-                                    <td class="py-2 px-4">${sensor.building}</td>
-                                    <td class="py-2 px-4">${sensor.door}</td>
-                                    <td class="py-2 px-4">${sensor.link_url}</td>
-                                    <td class="py-2 px-4">
-                                        <button data-id="${sensor.id}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded edit">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button data-id="${sensor.id}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded delete">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </td>
-                            `;
-                
-                row.innerHTML=rowHtml;                
-                tablaSensores.appendChild(row);
-            });
-          console.log(data); // Replace with your desired logic
+            // lo guardo en mi variable reactiva (ejecuta automáticamente renderDoors() )
+            A_doors.push(...data);
         })
         .catch(error => {
           // Handle any errors that occur during the fetch request
           console.error('Error:', error);
         });
     }
-
     function getGuests(){
         fetch('/api/clientes')
         .then(response => response.json())
         .then(data => {
+
+            
+            myApp.A_guests=data; // también lo guardo en una variable para usar en otros lados si necesito
             // Process the retrieved data
           
             // limpia o pone en mensaje de 0 elementos
@@ -141,7 +235,7 @@
             
             // agrego form de nuevo
             let optionsHtml="";
-            A_doors.forEach((item, index) => {
+            myApp.A_doors.forEach((item, index) => {
                 optionsHtml+=`<option value="${item.id}">${item.door}</option>`;
             });
             tablaClientes.innerHTML =`<tr>
@@ -167,19 +261,10 @@
                                 <td class="py-2 px-4">${formatDate(item.arriving_date)}</td>
                                 <td class="py-2 px-4">${formatDate(item.expiration_date)}</td>
                                 <td class="py-2 px-4">
-                                    <button data-id="${item.id}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button data-id="${item.id}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">
-                                        <i class="fas fa-key"></i>
-                                    </button>
-                                    <button data-id="${item.id}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded delete">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-
-                                    <a href="http://localhost:3000/${item.id}" target="_blank" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
+                                    <button data-id="${item.id}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"><i class="fas fa-edit"></i></button>
+                                    <button data-id="${item.id}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded"><i class="fas fa-key"></i></button>
+                                    <button data-id="${item.id}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded delete"><i class="fas fa-trash-alt"></i></button>
+                                    <a href="http://localhost:3000/${item.id}" target="_blank" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded"><i class="fas fa-eye"></i></a>
                                 </td>`;
                 
                 row.innerHTML=rowHtml;                
@@ -208,10 +293,10 @@
                 row.classList.add(index % 2 === 0 ? 'bg-gray-200' : 'bg-gray-100');
 
                 const rowHtml=`
-                  <td class="py-2 px-4">${formatDate(item.created_at)}</td>
-                  <td class="py-2 px-4">${item.client}</td>
-                  <td class="py-2 px-4">${item.ip}</td>
-                  <td class="py-2 px-4">${item.device}</td>
+                                <td class="py-2 px-4">${formatDate(item.created_at)}</td>
+                                <td class="py-2 px-4">${item.client}</td>
+                                <td class="py-2 px-4">${item.ip}</td>
+                                <td class="py-2 px-4">${item.device}</td>
                             `;
                 
                 row.innerHTML=rowHtml;                
@@ -228,10 +313,4 @@
     initApp();
 
 
-    function formatDate(dateString){
-        //const dateString = "2023-06-21T23:14:06.000Z";
-        const date = new Date(dateString);
-        const options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
-        return date.toLocaleString('en-US', options);
-        
-    }
+  

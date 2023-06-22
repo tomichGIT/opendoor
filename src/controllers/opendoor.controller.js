@@ -31,8 +31,8 @@ export const getLogs = async (req,res) => {
 
 }
 
-// Función de crearLog
-export const crearLog = async (req,res) => {
+// Función de openDoor (cada vez que un Guest abre una puerta [llamar a la función interna crear Log!!! ])
+export const openDoor = async (req,res) => {
 
 }
 
