@@ -8,6 +8,7 @@ import appRoutes from "./routes/opendoor.routes.js";
 
 const app = express();
 
+
 // Middlewares
 
 // Morgan es un middlewear que hace console de los requests de clientes.
@@ -28,7 +29,7 @@ app.use(express.static(path.resolve(PUBLIC_PATH)));
 app.use("/", appRoutes);
 
 app.use((req, res, next) => {
-  res.status(404).json({ message: "Not found" });
+  res.status(404).json({ message: "Not found", error:1 });
 });
 
 export default app;

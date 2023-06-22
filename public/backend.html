@@ -45,6 +45,16 @@
             <th class="py-2 px-4 bg-gray-100">Link Expiration</th>
             <th class="py-2 px-4 bg-gray-100">Actions</th>
           </tr>
+          <tr>
+            <th class="py-2 px-4">&nbsp;</th>
+            <th class="py-2 px-4"><input type="text" value="" id="txt_fullname" class="border border-gray-300" style="width:100%;" /></th>
+            <th class="py-2 px-4"><input type="text" value="" id="txt_apartment" class="border border-gray-300" style="width:100%;" /></th>
+            <th class="py-2 px-4"><select id="select_sensores"></select></th>
+            <!-- <th class="py-2 px-4"><input type="date" value="" id="txt_date" class="border border-gray-300" style="width:100%;" /></th> -->
+            <th class="py-2 px-4"><input type="datetime-local" value="" id="txt_date" class="border border-gray-300" style="width:100%;" /></th>
+            <th class="py-2 px-4"><select id="select_timeout"><option value="12">12hs</option><option value="24">24hs</option><option value="48">48hs</option></select></th>
+            <th class="py-2 px-4"><button data-id="new" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded" id="saveGuestBtn">Guardar</button></th>
+        </tr>
         </thead>
         <tbody>
           <tr>
@@ -95,7 +105,8 @@
   <!-- Logs -->
   <section class="p-8 private hidden">
     <div class="container mx-auto">
-      <h2 class="text-2xl font-bold mb-4">Registro Log (últimos 100)</h2>
+      <h2 style="float:left;" class="text-2xl font-bold mb-4">Registro Log (últimos 100) </h2>
+      <div style="float:right;"><button id="btnGetLogs">Refresh</button></div>
       <table class="min-w-full border border-gray-300"  id="tablaLogs">
         <thead>
           <tr>

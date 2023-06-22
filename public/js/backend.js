@@ -1,8 +1,7 @@
     import { formatDate } from './libs/dates.js';
     import { shorterText, showHideMoreInfo } from './libs/texts.js';
     import {setReactive} from './libs/reactive.js';
-
-
+    
    /*
    ejemplo link apertura puerta:
    https://us-apia.coolkit.cc/v2/smartscene2/webhooks/execute?id=1fb4a1500da34e41a20413f789227f7d
@@ -19,16 +18,23 @@
     const loginSection = document.querySelectorAll('.login'); // solo elementos en pantalla de login
 
     const tablaSensores = document.querySelector('#tablaSensores');
-    const tablaClientes = document.querySelector('#tablaClientes tbody');
-    const tablaLogs = document.querySelector('#tablaLogs tbody');
+    const tablaClientes = document.querySelector('#tablaClientes');
+    const tablaLogs = document.querySelector('#tablaLogs');
 
 
     const loginBtn = document.getElementById('loginBtn');
     const logoutBtn = document.getElementById('logoutBtn');
     loginBtn.addEventListener('click', () => {
-        console.log('¡Accediste!');
-        myApp.tf_login=true;
-        checkLogin();
+        const getUser=document.getElementById('username').value;
+        const getPass=document.getElementById('password').value;
+        // demo user
+        if(getUser=="arielgrovpman" && getPass=="opendoor123!"){
+            console.log('¡Accediste!');
+            myApp.tf_login=true;
+            checkLogin();
+        } else {
+            alert("credenciales inválidas");
+        }
     });
     logoutBtn.addEventListener('click', () => {
         console.log('Logout!');
@@ -163,7 +169,7 @@
             row.innerHTML=rowHtml;                
             tablaSensores.querySelector("tbody").appendChild(row);
         });
-        console.log(A_doors); // Replace with your desired logic
+        //console.log(A_doors); // Replace with your desired logic
         
         // Update de Buttons
         const removeButtons = tablaSensores.querySelectorAll('tbody .removeDoor');
@@ -179,8 +185,152 @@
 
 
 
+    const saveGuestBtn = document.getElementById("saveGuestBtn");
+    saveGuestBtn.addEventListener('click', e => {
+
+        const txt_fullname=tablaClientes.querySelector("#txt_fullname").value;
+        const txt_apartment=tablaClientes.querySelector("#txt_apartment").value;
+        const txt_dates=tablaClientes.querySelector("#txt_date").value;
+
+        const select_sensores=tablaClientes.querySelector("#select_sensores").value;
+        const select_timeout=tablaClientes.querySelector("#select_timeout").value;
+
+        const dataId = saveDoorBtn.getAttribute("data-id");
+
+        if(txt_fullname.length < 3 || txt_apartment.length < 3){
+            alert("Nombre de cliente o de Apartamento muy cortos"); return;
+        }
+
+        const guestData = {
+            txt_fullname:txt_fullname,
+            txt_apartment:txt_apartment,
+            select_sensores:select_sensores,
+            txt_dates:txt_dates,
+            select_timeout:select_timeout
+        };
+
+        // si tiene id estoy editando, si no creo uno nuevo
+        // dataId es del array del DOM, el id original lo obtengo acá.
+        const fetchUrl=(A_guests[dataId])?'/api/clientes/'+A_guests[dataId].id:'/api/clientes';
+
+        fetch(fetchUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(guestData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            // lo guardo en mi variable reactiva (ejecuta automáticamente renderDoors() )
+            getGuests();
+        })
+        .catch(error => {
+          // Handle any errors that occur during the fetch request
+          console.error('Error:', error);
+        });
+
+
+    });
+    function removeGuest(event){
+        const dataId = event.currentTarget.getAttribute("data-id");
+
+        const cliente= A_guests[dataId].name;
+        
+        const confirmation = confirm("esta seguro que quieres borrar este pasajero? "+cliente);
+        if (!confirmation) { return }
+
+        const itemId = A_guests[dataId].id;
+    
+        fetch('/api/clientes/'+itemId, {method:"DELETE"})
+        .then(response => response.json())
+        .then(data => {
+            // lo guardo en mi variable reactiva (ejecuta automáticamente renderGuests() )
+            getGuests();
+        })
+        .catch(error => {
+          // Handle any errors that occur during the fetch request
+          console.error('Error:', error);
+        });
+    }
+    function editGuest(event){
+        // cargar el formulario con los datos
+        // esta funcion NO LLEVA  FETCH REQUEST!
+        const dataId = event.currentTarget.getAttribute("data-id");
+        console.log("editando guest: "+dataId);
+
+        const txt_fullname=tablaClientes.querySelector("#txt_fullname");
+        const txt_apartment=tablaClientes.querySelector("#txt_apartment");
+        const txt_date=tablaClientes.querySelector("#txt_date");
+        const select_sensores=tablaClientes.querySelector("#select_sensores");
+
+        // Falta autoseleccionar Door y Expiration
+        
+        saveDoorBtn.setAttribute("data-id", dataId);
+
+        txt_fullname.value=A_guests[dataId].name;
+        txt_apartment.value=A_guests[dataId].apartment;
+        txt_date.value=A_guests[dataId].arriving_date.substring(0, 16); // para datetime
+        //txt_date.value=A_guests[dataId].arriving_date.substring(0, 10); // para date
+
+        select_sensores.value = A_guests[dataId].id_sensor.toString();
+        
+    }
     function renderGuests(){
-        console.log("Rendering A_guests:", A_guests);
+        
+
+        // Limpio el formulario
+        tablaClientes.querySelector("#txt_fullname").value="";
+        tablaClientes.querySelector("#txt_apartment").value="";
+        tablaClientes.querySelector("#txt_date").value="";
+        saveGuestBtn.setAttribute("data-id", "new");
+
+        // limpia o pone en mensaje de 0 elementos
+        tablaClientes.querySelector("tbody").innerHTML =(A_guests.length)?'':'<tr><td colspan="5" class="h-32 text-xl text-center"><span>No se encontrar Registros</span></td></tr>'; // Clear existing content
+
+
+            
+        // agrego form de nuevo
+        let optionsHtml="";
+        myApp.A_doors.forEach((item, index) => {
+            //console.log("item es:", item);
+            optionsHtml+=`<option value="${item.id}">${item.door}</option>`;
+        });
+        tablaClientes.querySelector("#select_sensores").innerHTML=optionsHtml;
+        
+ 
+        // Process the retrieved data
+        A_guests.forEach((item, index) => {
+            const row = document.createElement('tr');
+            row.classList.add(index % 2 === 0 ? 'bg-gray-200' : 'bg-gray-100');
+
+            const rowHtml=` <td class="py-2 px-4">${item.id}</td>
+                            <td class="py-2 px-4">${item.name}</td>
+                            <td class="py-2 px-4">${item.apartment}</td>
+                            <td class="py-2 px-4">${item.door}</td>
+                            <td class="py-2 px-4">${formatDate(item.arriving_date)}</td>
+                            <td class="py-2 px-4">${formatDate(item.expiration_date)}</td>
+                            <td class="py-2 px-4">
+                                <button data-id="${index}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded editGuest"><i class="fas fa-edit"></i></button>
+                                <button data-id="${index}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded removeGuest"><i class="fas fa-trash-alt"></i></button>
+                                <a href="http://localhost:3000/${item.uuid}" target="_blank" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded"><i class="fas fa-eye"></i></a>
+                                <button data-id="${index}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded"><i class="fas fa-key"></i></button>
+                            </td>`;
+            
+            row.innerHTML=rowHtml;                
+            tablaClientes.querySelector("tbody").appendChild(row);
+        });
+      //console.log(A_guests); // Replace with your desired logic
+
+          // Update de Buttons
+          const removeButtons = tablaClientes.querySelectorAll('tbody .removeGuest');
+          removeButtons.forEach(button => {
+            button.addEventListener('click', removeGuest);
+          });
+          const editButtons = tablaClientes.querySelectorAll('tbody .editGuest');
+          editButtons.forEach(button => {
+            button.addEventListener('click', editGuest);
+          });
+
+
     }
 
     function checkLogin(){
@@ -201,7 +351,7 @@
 
     function getData(){
         getDoors();
-        getGuests();
+        //getGuests();
         getLogs();
     }
 
@@ -213,6 +363,7 @@
         .then(data => {
             // lo guardo en mi variable reactiva (ejecuta automáticamente renderDoors() )
             A_doors.push(...data);
+            getGuests();
         })
         .catch(error => {
           // Handle any errors that occur during the fetch request
@@ -220,63 +371,16 @@
         });
     }
     function getGuests(){
+        A_guests.length = 0; // lo vacío (es const, asi que no lo puedo vacíar con = []  )
         fetch('/api/clientes')
         .then(response => response.json())
         .then(data => {
-
-            
-            myApp.A_guests=data; // también lo guardo en una variable para usar en otros lados si necesito
-            // Process the retrieved data
-          
-            // limpia o pone en mensaje de 0 elementos
-            tablaClientes.innerHTML =(data.length)?'':'<tr><td colspan="5" class="h-32 text-xl text-center"><span>No se encontrar Registros</span></td></tr>'; // Clear existing content
-
-
-            
-            // agrego form de nuevo
-            let optionsHtml="";
-            myApp.A_doors.forEach((item, index) => {
-                optionsHtml+=`<option value="${item.id}">${item.door}</option>`;
-            });
-            tablaClientes.innerHTML =`<tr>
-                                        <td class="py-2 px-4">&nbsp;</td>
-                                        <td class="py-2 px-4"><input type="text" value="" class="border border-gray-300" style="width:100%;" /></td>
-                                        <td class="py-2 px-4"><input type="text" value="" class="border border-gray-300" style="width:100%;" /></td>
-                                        <td class="py-2 px-4"><select>${optionsHtml}</select></td>
-                                        <td class="py-2 px-4"><input type="text" value="" class="border border-gray-300" style="width:100%;" /></td>
-                                        <td class="py-2 px-4"><select><option value="12">12hs</option><option value="24">24hs</option><option value="48">48hs</option></select></td>
-                                        <td class="py-2 px-4"><button data-id="0" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded edit">Guardar</button></td>
-                                    </tr>
-                `;
-     
-            // Process the retrieved data
-            data.forEach((item, index) => {
-                const row = document.createElement('tr');
-                row.classList.add(index % 2 === 0 ? 'bg-gray-200' : 'bg-gray-100');
-
-                const rowHtml=` <td class="py-2 px-4">${item.id}</td>
-                                <td class="py-2 px-4">${item.name}</td>
-                                <td class="py-2 px-4">${item.apartment}</td>
-                                <td class="py-2 px-4">${item.door}</td>
-                                <td class="py-2 px-4">${formatDate(item.arriving_date)}</td>
-                                <td class="py-2 px-4">${formatDate(item.expiration_date)}</td>
-                                <td class="py-2 px-4">
-                                    <button data-id="${item.id}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"><i class="fas fa-edit"></i></button>
-                                    <button data-id="${item.id}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded"><i class="fas fa-key"></i></button>
-                                    <button data-id="${item.id}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded delete"><i class="fas fa-trash-alt"></i></button>
-                                    <a href="http://localhost:3000/${item.id}" target="_blank" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded"><i class="fas fa-eye"></i></a>
-                                </td>`;
-                
-                row.innerHTML=rowHtml;                
-                tablaClientes.appendChild(row);
-            });
-          console.log(data); // Replace with your desired logic
+            A_guests.push(...data);            
         })
         .catch(error => {
           // Handle any errors that occur during the fetch request
           console.error('Error:', error);
         });
-
     }
     function getLogs(){
         fetch('/api/logs')

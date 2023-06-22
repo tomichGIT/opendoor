@@ -12,34 +12,38 @@
 
 <body class="bg-gray-100">
   <div class="flex flex-col items-center justify-center h-screen">
-    <h1 class="text-4xl font-bold mb-4">¡Bienvenido <b class="txt_nombre">PASAJERO</b> a tu departamento!</h1>
+    <img src="imgs/logo.jpg" alt=""><br><br>
+    <h1 class="text-4xl font-bold mb-4">¡Bienvenido <b id="txt_nombre">nombre pasajero</b> a tu departamento!</h1>
     <p class="text-lg mb-8">Estamos encantados de tenerte como nuestro huésped.</p>
-    <button id="doorBtn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded">
-      Abrir puerta del edificio
-    </button>
-    <p>Este link dejara de funcionar en <b id="timer">14:25:12</b></p>
-
-
-
-
-    <div>
-        <hr>
-        Funcionalidades a desarrollar:
-        <ul>
-            <li>- recibir un id de link (el mismo debe ver si es válido, caso contrario página de link expirado)</li>
-            <li>- Buscar en la base de datos Nombre de Pasajero, y fecha de vencimiento</li>
-            <li>- Cada cliente tiene su id, vinculado a una fecha de expiración de su link (ver cuantas horas le queda para usarlo)</li>
-            <li>- al abrir puerta, avisar al usuario y decir que tiene 5 segundos para entrar con timmer</li>
-        </ul>
+    
+    <div id="divOpenDoor">
+      <a href="#" id="doorBtn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded">
+        Abrir puerta del edificio
+      </a>
+    </div>
+    <div id="divMsgStatus" class="hidden">
+      <div id="successMsg" class="bg-green-500 text-white text-center font-bold py-4 px-8" style="width:100vw;">
+        Puerta abierta <br><span class="countdown">10</span> segs
+      </div>
+      <div id="errorMsg" class="bg-red-500 text-white text-center font-bold py-4 px-8" style="width:100vw;">
+        Error al abrir la puerta <br><span class="countdown">10</span> segs
+      </div>
     </div>
 
 
+   
+
+
+
+
+    <br><br><br><br><br>
+    <p>Esta llave digital dejará de funcionar en <b id="txt_timer">00:00:00</b></p>
   </div>
 
-
-
+  {{myScript}}
   <!-- Agrega el script para la interacción del botón -->
   <script src="js/opendoor.js"></script>
+
 </body>
 
 </html>
