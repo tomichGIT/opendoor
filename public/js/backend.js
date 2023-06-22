@@ -6,6 +6,33 @@
     const tablaClientes = document.querySelector('#tablaClientes tbody');
     const tablaLogs = document.querySelector('#tablaLogs tbody');
 
+    // botones para agregar    
+    //const addDoorBtn = document.getElementById('addDoorBtn');
+    //const addGuestBtn = document.getElementById('addGuestBtn'); 
+    // addDoorBtn.addEventListener('click', () => {
+    //     console.log('Abrir Modal y Formulario!');
+
+    // //     // Create the inline form elements
+    // //   const formRow = document.createElement('tr');
+    // //   formRow.innerHTML = `
+    // //     <td><input type="text" class="border border-gray-300 p-2"></td>
+    // //     <td><input type="text" class="border border-gray-300 p-2"></td>
+    // //     <td><input type="text" class="border border-gray-300 p-2"></td>
+    // //     <td>
+    // //       <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">Save</button>
+    // //       <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Cancel</button>
+    // //     </td>
+    // //   `;
+
+    // //   // Remove the "Buscando datos..." row
+    // //   doorsList.innerHTML = '';
+
+    // //   // Append the form row to the doors list
+    // //   doorsList.appendChild(formRow);
+
+
+    // });
+
 
     const loginBtn = document.getElementById('loginBtn');
     const logoutBtn = document.getElementById('logoutBtn');
@@ -44,21 +71,33 @@
     function initApp(){
         checkLogin();
 
-        getSensors();
+        getDoors();
         getGuests();
         getLogs();
     }
 
-
-    function getSensors(){
+    let A_doors=[];
+    function getDoors(){
         fetch('/api/sensores')
         .then(response => response.json())
         .then(data => {
-          // Process the retrieved data
+
+            A_doors=data; // también lo guardo en una variable para usar en otros lados (los select)
+            // Process the retrieved data
           
             // limpia o pone en mensaje de 0 elementos
             tablaSensores.innerHTML =(data.length)?'':'<tr><td colspan="4" class="h-32 text-xl text-center"><span>No se encontrar Registros</span></td></tr>'; // Clear existing content
      
+            // agrego form de nuevo
+            tablaSensores.innerHTML =`<tr>
+                                <td class="py-2 px-4"><input type="text" value="" class="border border-gray-300" style="width:100%;" /></td>
+                                <td class="py-2 px-4"><input type="text" value="" class="border border-gray-300" style="width:100%;" /></td>
+                                <td class="py-2 px-4"><input type="text" value="" class="border border-gray-300" style="width:100%;" /></td>
+                                <td class="py-2 px-4"><button data-id="0" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded edit">Guardar</button></td>
+                                </tr>
+            `;
+
+
             // Process the retrieved data
             data.forEach((sensor, index) => {
                 const row = document.createElement('tr');
@@ -93,10 +132,28 @@
         fetch('/api/clientes')
         .then(response => response.json())
         .then(data => {
-          // Process the retrieved data
+            // Process the retrieved data
           
             // limpia o pone en mensaje de 0 elementos
             tablaClientes.innerHTML =(data.length)?'':'<tr><td colspan="5" class="h-32 text-xl text-center"><span>No se encontrar Registros</span></td></tr>'; // Clear existing content
+
+
+            
+            // agrego form de nuevo
+            let optionsHtml="";
+            A_doors.forEach((item, index) => {
+                optionsHtml+=`<option value="${item.id}">${item.door}</option>`;
+            });
+            tablaClientes.innerHTML =`<tr>
+                                        <td class="py-2 px-4">&nbsp;</td>
+                                        <td class="py-2 px-4"><input type="text" value="" class="border border-gray-300" style="width:100%;" /></td>
+                                        <td class="py-2 px-4"><input type="text" value="" class="border border-gray-300" style="width:100%;" /></td>
+                                        <td class="py-2 px-4"><select>${optionsHtml}</select></td>
+                                        <td class="py-2 px-4"><input type="text" value="" class="border border-gray-300" style="width:100%;" /></td>
+                                        <td class="py-2 px-4"><select><option value="12">12hs</option><option value="24">24hs</option><option value="48">48hs</option></select></td>
+                                        <td class="py-2 px-4"><button data-id="0" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded edit">Guardar</button></td>
+                                    </tr>
+                `;
      
             // Process the retrieved data
             data.forEach((item, index) => {
@@ -106,6 +163,7 @@
                 const rowHtml=` <td class="py-2 px-4">${item.id}</td>
                                 <td class="py-2 px-4">${item.name}</td>
                                 <td class="py-2 px-4">${item.apartment}</td>
+                                <td class="py-2 px-4">${item.door}</td>
                                 <td class="py-2 px-4">${formatDate(item.arriving_date)}</td>
                                 <td class="py-2 px-4">${formatDate(item.expiration_date)}</td>
                                 <td class="py-2 px-4">

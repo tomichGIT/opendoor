@@ -26,45 +26,21 @@
 
 
 
-  <section class="p-8 private hidden">
-    <div class="container mx-auto">
-      <h2 class="text-2xl font-bold mb-4">Doors List</h2>
-      <div class="flex justify-end mb-4">
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add New Door</button>
-      </div>
-      <table class="min-w-full border border-gray-300" id="tablaSensores">
-        <thead>
-          <tr>
-            <th class="py-2 px-4 bg-gray-100">Edificio</th>
-            <th class="py-2 px-4 bg-gray-100">Nombre</th>
-            <th class="py-2 px-4 bg-gray-100">Access Link</th>
-            <th class="py-2 px-4 bg-gray-100">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td colspan="4" class="h-32 text-xl text-center">
-              <span>Buscando datos...</span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
+  
   <!-- Guests -->
   <section class="p-8 private hidden">
     <div class="container mx-auto">
       <h2 class="text-2xl font-bold mb-4">Guest List</h2>
-      <div class="flex justify-end mb-4">
+      <!-- <div class="flex justify-end mb-4">
         <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add New Guest</button>
-      </div>
+      </div> -->
       <table class="min-w-full border border-gray-300" id="tablaClientes">
         <thead>
           <tr>
             <th class="py-2 px-4 bg-gray-100">#</th>
             <th class="py-2 px-4 bg-gray-100">Full Name</th>
             <th class="py-2 px-4 bg-gray-100">Apartment Number</th>
+            <th class="py-2 px-4 bg-gray-100">Door</th>
             <th class="py-2 px-4 bg-gray-100">Arriving Date</th>
             <th class="py-2 px-4 bg-gray-100">Link Expiration</th>
             <th class="py-2 px-4 bg-gray-100">Actions</th>
@@ -76,72 +52,38 @@
               <span>Buscando datos...</span>
             </td>
           </tr>
-          <!-- Example guest data -->
-          <!-- <tr class="bg-gray-200">
-            <td class="py-2 px-4">John Doe</td>
-            <td class="py-2 px-4">A102</td>
-            <td class="py-2 px-4">2023-06-25</td>
-            <td class="py-2 px-4">Building A</td>
-            <td class="py-2 px-4">
-              <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">
-                <i class="fas fa-key"></i>
-              </button>
-              <button class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">
-                <i class="fas fa-eye"></i>
-              </button>
-              <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">
-                <i class="fas fa-trash-alt"></i>
-              </button>
-            </td>
-          </tr>
-          <tr class="bg-gray-100">
-            <td class="py-2 px-4">John Doe</td>
-            <td class="py-2 px-4">A102</td>
-            <td class="py-2 px-4">2023-06-25</td>
-            <td class="py-2 px-4">Building A</td>
-            <td class="py-2 px-4">
-              <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">
-                <i class="fas fa-key"></i>
-              </button>
-              <button class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">
-                <i class="fas fa-eye"></i>
-              </button>
-              <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">
-                <i class="fas fa-trash-alt"></i>
-              </button>
-            </td>
-          </tr>
-          <tr class="bg-gray-200">
-            <td class="py-2 px-4">John Doe</td>
-            <td class="py-2 px-4">A102</td>
-            <td class="py-2 px-4">2023-06-25</td>
-            <td class="py-2 px-4">Building A</td>
-            <td class="py-2 px-4">
-              <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">
-                <i class="fas fa-key"></i>
-              </button>
-              <button class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">
-                <i class="fas fa-eye"></i>
-              </button>
-              <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">
-                <i class="fas fa-trash-alt"></i>
-              </button>
-            </td>
-          </tr> -->
-          <!-- Add more guest rows as needed -->
         </tbody>
       </table>
     </div>
   </section>
+
+  <!-- Doors -->
+  <section class="p-8 private hidden">
+    <div class="container mx-auto">
+      <h2 class="text-2xl font-bold mb-4">Doors List</h2>
+      <!-- <div class="flex justify-end mb-4">
+        <button id="addDoorBtn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add New Door</button>
+      </div> -->
+      <table class="min-w-full border border-gray-300" id="tablaSensores">
+        <thead>
+          <tr>
+            <th class="py-2 px-4 bg-gray-100">Edificio</th>
+            <th class="py-2 px-4 bg-gray-100">Nombre</th>
+            <th class="py-2 px-4 bg-gray-100">Access Link</th>
+            <th class="py-2 px-4 bg-gray-100">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="doorsList">
+          <tr>
+            <td colspan="4" class="h-32 text-xl text-center">
+              <span>Buscando datos...</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+  
 
 
   <!-- Logs -->
@@ -168,6 +110,13 @@
     </div>
   </section>
   
+
+  <section class="p-8 private hidden">
+    <div class="container mx-auto">
+
+   
+  </div>
+  </section>
 
   <!-- Login -->
   <section class="flex items-center justify-center login hidden" style="height: 60vh;">
@@ -200,7 +149,7 @@
 
   
   <!-- Footer -->
-  <section class="justify-center bg-gray-800 flex footer text-white" style="position:absolute; bottom:0; width:100%;">
+  <section class="justify-center bg-gray-800 flex footer text-white" style="position:fixed; bottom:0; width:100%;">
     Made with <span class="text-red">❤</span> by&nbsp;<u><a href="https://kukumo.net">Kukumo.net</a></u>
   </div>
 
