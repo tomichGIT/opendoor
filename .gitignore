@@ -10,6 +10,7 @@ lerna-debug.log*
 # app VITE de ejemplo con vanilla JS
 # exampleApp
 
+.env
 node_modules
 dist
 dist-ssr
