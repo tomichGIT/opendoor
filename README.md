@@ -1,19 +1,31 @@
-# opendoor
+# OpenDoor
 apertura autmática de puertas
 
 
-## funcionalidades
+## Funcionalidades
 Permite darle a los usuarios links de apertura de puerta de distintos edificios.
 
 
-## VITE!
+## FRONTEND con VITE!
 impelmentamos vite para desarrollar fronentds mas rápidamente
+
 durante las pruebas se testea VITE usando `pnpm run dev` y obteniendo la fuente de `cliente/src`
 para hacer un build se hace `pnpm run build` la cual creará la carpeta `client/dist`
 
-Una vez hecho el build utilizamos `pnpm run dev2` para ejecutar el BACKEND con node.
+Vite utiliza Rollup para realizar el build. En `vite.config.js` necesitamos especificar los endpoints a copiar.
+En nuestro caso procesaremos `index.html` y `backend.html` que debería llamarse `admin-panel` en vez de backend para no confundir
+[Pruebas Vite](http://localhost:5173)
+
+## BACKENMD con Express y Node
+
+Una vez hecho el build del FrontEnd utilizamos `pnpm run dev2` para ejecutar el BACKEND con Node.
 Esto es hasta que aprendamos a configurar VITE para que también ejecute el backend.
 
+[Full Stack + Backend](http://localhost:3000)
 
-Full Stack + Backend: http://localhost:3000
-Pruebas Vite: http://localhost:5173
+
+## Tareas
+[ ] renombrar `backend.html` a `admin-panel`
+[ ] ver de ejecutar el backend con VITE
+[ ] Login de Usuarios correct
+[ ] Que ocurre con `.env` en producción??
