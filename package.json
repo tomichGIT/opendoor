@@ -2,11 +2,14 @@
   "name": "opendoor",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.js",
+  "main": "server/index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/index.js",
-    "run": "node src/index.js",
+    "dev": "vite",
+    "build": "vite build  --emptyOutDir",
+    "preview": "vite preview",
+    "dev2": "nodemon server/index.js",
+    "run2": "node server/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -20,6 +23,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.22"
+    "nodemon": "^2.0.22",
+    "vite": "^4.3.9"
   }
 }

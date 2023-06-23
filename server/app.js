@@ -1,6 +1,6 @@
 import express from "express";
 import path from "path";
-import { PUBLIC_PATH } from "./config.js";
+import { PUBLIC_PATH } from "../config/config.js";
 //import morgan from "morgan";
 
 
@@ -21,9 +21,10 @@ app.use(express.json());
 
 
 // resuelve las rutas de los archivos estáticos
-//app.use(express.static(path.resolve("src/public")));
+// Serve the static frontend assets
+//app.use(express.static(path.resolve("server/public")));
 app.use(express.static(path.resolve(PUBLIC_PATH)));
-
+//app.use(express.static(path.join(__dirname, 'app', 'client', 'public')));
 
 // Routes
 app.use("/", appRoutes);

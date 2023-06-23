@@ -37,4 +37,17 @@ router.post("/api/user", crearUsuario);
 router.post("/api/user/:id", editarUsuario);
 router.delete("/api/user/:id", eliminarUsuario);
 
+
+
+
+
+
+// // Serve the frontend application for all other routes not specified
+// router.get('*', (req, res) => {
+//     //res.sendFile(path.join(__dirname, 'app', 'client', 'public', 'index.html'));
+//     //res.sendFile(path.join(__dirname, 'app', 'client', 'public', 'index.html'));
+//     res.sendFile(path.resolve(staticPath+"/backend.html"))
+//   });
+
+  
 export default router;

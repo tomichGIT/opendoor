@@ -8,4 +8,6 @@ export const DB_PASSWORD = process.env.DB_PASSWORD || "";
 export const DB_DATABASE = process.env.DB_DATABASE || "db_myDatabase";
 export const DB_PORT = process.env.DB_PORT || 3306;
 
-export const PUBLIC_PATH = process.env.PUBLIC_PATH || 'public_html';
+
+export const PUBLIC_PATH = './client/dist/';
+//export const PUBLIC_PATH = './client/dist/'+process.env.PUBLIC_PATH || './client/dist';

@@ -1,6 +1,9 @@
     import { formatDate } from './libs/dates.js';
     import { shorterText, showHideMoreInfo } from './libs/texts.js';
     import {setReactive} from './libs/reactive.js';
+
+    // podría importar estilos desde acá con VITE en vez de usar la etiqueta HTML
+    import '../css/backend.css'
     
    /*
    ejemplo link apertura puerta:

@@ -1,5 +1,5 @@
 import { pool } from "../db.js";
-import { PUBLIC_PATH } from "../config.js";
+import { PUBLIC_PATH } from "../../config/config.js";
 import path from "path";
 import fs from 'fs';
 
